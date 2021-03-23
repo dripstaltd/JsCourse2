@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>My Rust Roulette Wheel</title>
+    <script defer src="script.js"></script>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <head>
+      <!--   Icons link -->
+      <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
+      <link
+        rel="stylesheet"
+        href="https://unpkg.com/ionicons@4.2.4/dist/css/ionicons.min.css"
+      />
+      <!--   Fonts link -->
+      <link
+        rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Montserrat:500,700&amp;display=swap"
+      />
+    </head>
+
+    <form>
+      <div class="segment">
+        <h1>RustPal</h1>
+      </div>
+      <!-- 1-row   -->
+      <label>
+        <input type="text" placeholder="" />
+      </label>
+      <!-- 2-row   -->
+      <label>
+        <input type="password" placeholder="" />
+      </label>
+      <!--  3-row  -->
+      <button class="red" type="button">
+        <span
+          class="iconify"
+          data-icon="ion-add-circle-outline"
+          data-inline="true"
+        ></span>
+        ADD
+      </button>
+
+      <div class="segment">
+        <button class="unit" type="button">
+          <i class="icon ion-md-arrow-back"></i>
+        </button>
+        <button class="unit" type="button">
+          <i class="icon ion-md-bookmark"></i>
+        </button>
+        <button class="unit" type="button">
+          <i class="icon ion-md-settings"></i>
+        </button>
+      </div>
+
+      <div class="input-group hidden">
+        <label>
+          <input type="text" placeholder="Email Address" />
+        </label>
+        <button class="unit" type="button">
+          <i class="icon ion-md-search"></i>
+        </button>
+      </div>
+    </form>
+  </body>
+</html>
