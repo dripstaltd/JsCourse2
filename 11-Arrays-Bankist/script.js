@@ -308,6 +308,7 @@ for (const mov of movements) balance2 += mov;
 // console.log(balance2);
 
 /*.:|REGION|:.*/
+/*
 const deposits = movements.filter(mov => mov > 0);
 const withdrawals = movements.filter(mov => mov < 0);
 // console.log(movements);
@@ -321,7 +322,7 @@ const depositsFor = [];
 for (const mov of movements) if (mov > 0) depositsFor.push(mov);
 
 // console.log(depositsFor);
-
+*/
 /*.:|REGION|:.*/
 // using map method to create and fill
 const movementsUSD = movements.map(function (mov) {
@@ -504,8 +505,8 @@ labelBalance.addEventListener('click', function () {
 //////////////////////////////////////////////
 //////////////////////////////////////////////
 //////////////////////////////////////////////
-// Array Methods Practice
-// 1.
+//-| Array Methods Practice
+//-| 1.
 const bankDepositSum = accounts
   .flatMap(acc => acc.movements)
   .filter(mov => mov > 0)
@@ -513,7 +514,7 @@ const bankDepositSum = accounts
 
 console.log(bankDepositSum);
 
-// 2.
+//-| 2.
 const num1Deposits1000 = accounts
   .flatMap(acc => acc.movements)
   .filter(mov => mov >= 1000).length;
@@ -522,10 +523,75 @@ console.log(num1Deposits1000);
 
 const numDeposits1000 = accounts
   .flatMap(acc => acc.movements)
-  .reduce((count, cur) => (cur >= 1000 ? count + 1 : count), 0);
+  .reduce((count, cur) => (cur >= 1000 ? ++count : count), 0);
 
 console.log(numDeposits1000);
 
+//-| 3.
+const { deposits, withdrawals } = accounts
+  .flatMap(acc => acc.movements)
+  .reduce(
+    (sums, cur) => {
+      //cur > 0 ? (sums.deposits += cur) : (sums.withdrawals += cur);
+      sums[cur > 0 ? 'deposits' : 'withdrawals'] += cur;
+      return sums;
+    },
+    { deposits: 0, withdrawals: 0 }
+  );
+
+console.log(deposits, withdrawals);
+
+//-| 4.
+// this is a nice title -> This Is A Nice Title
+const convertTitleCase = function (title) {
+  const capitalize = str => str[0].toUpperCase() + str.slice(1);
+
+  const exceptions = [
+    'a',
+    'an',
+    'the',
+    'but',
+    'or',
+    'on',
+    'in',
+    'with',
+    'for',
+    'if',
+    'nor',
+    'per',
+    'to',
+    'via',
+    'vs',
+    'and',
+    'is',
+    'do',
+    'of',
+  ];
+
+  const titleCase = title
+    .toLowerCase()
+    .split(' ')
+    .map(word => (exceptions.includes(word) ? word : capitalize(word)))
+    .join(' ');
+
+  return capitalize(titleCase);
+};
+
+console.log(convertTitleCase('this is a nice title'));
+console.log(convertTitleCase('another one of MY titles'));
+console.log(
+  convertTitleCase('i do LOVE writing and making lots of unique titles')
+);
+
+//////////////////////////////////////////////
+/*
+let a = 10;
+console.log(a++); // 10
+console.log(a); // 11
+console.log(++a); // 12
+console.log(a++); // 12
+console.log(a); // 13
+*/
 //////////////////////////////////////////////
 //:Coding Challenge #4
 /*
