@@ -88,3 +88,5 @@
 //-|   FIND: then returns the element itself (no array)  ;
 
 // UD5YY2R-UWLL8U9-523U8U3-FWQKKVA
+
+// PRIME: DNQ37-T5UXQ-9UJGU-F8WAB
