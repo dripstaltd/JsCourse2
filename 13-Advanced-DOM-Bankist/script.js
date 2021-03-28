@@ -222,7 +222,7 @@ document.querySelector('.nav').addEventListener(
 */
 
 //-| Dom Traversing ------------------------------
-
+/*
 // Going downwards: child
 const h1 = document.querySelector('h1');
 console.log(h1.querySelectorAll('.highlight'));
@@ -250,3 +250,4 @@ console.log(h1.parentElement.children);
 [...h1.parentElement.children].forEach(function (el) {
   if (el !== h1) el.style.transform = 'scale(0.5)';
 });
+*/
