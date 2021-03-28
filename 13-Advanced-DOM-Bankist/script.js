@@ -10,7 +10,8 @@ const tabs = document.querySelectorAll('.operations__tab'); // Buttons
 const tabsContainer = document.querySelector('.operations__tab-container');
 const tabsContent = document.querySelectorAll('.operations__content');
 ///////////////////////////////////////
-// Modal window
+//-| Modal window                     -
+///////////////////////////////////////
 const openModal = function (e) {
   e.preventDefault();
   modal.classList.remove('hidden');
@@ -32,9 +33,9 @@ document.addEventListener('keydown', function (e) {
     closeModal();
   }
 });
-/////////////////////////////////////////////////
-// Page navigation
-
+////////////////////////////////////////
+//-| Page navigation                   -
+////////////////////////////////////////
 // document.querySelectorAll('.nav__link').forEach(function (el) {
 //   el.addEventListener('click', function (e) {
 //     e.preventDefault();
@@ -56,9 +57,9 @@ document.querySelector('.nav__links').addEventListener('click', function (e) {
   }
 });
 
-/////////////////////////////////////////////////
-//-| Tab content                                -
-/////////////////////////////////////////////////
+////////////////////////////////////////
+//-| Tab content                       -
+////////////////////////////////////////
 tabsContainer.addEventListener('click', function (e) {
   const clicked = e.target.closest('.operations__tab');
   if (!clicked) return;
@@ -72,10 +73,15 @@ tabsContainer.addEventListener('click', function (e) {
     .querySelector(`.operations__content--${clicked.dataset.tab}`)
     .classList.add('operations__content--active');
 });
-/////////////////////////////////////////////////
-/////////////////////////////////////////////////
 
-//-| Selecting elements -------------------------
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+////////////////////////////////////////
+//-| Selecting elements                -
+////////////////////////////////////////
 // console.log(document.documentElement);
 // console.log(document.head);
 // console.log(document.body);
