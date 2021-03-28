@@ -97,6 +97,19 @@ nav.addEventListener('mouseout', handleHover.bind(1));
 ////////////////////////////////////////
 //-| Sticky Navigation                 -
 ////////////////////////////////////////
+const obsCallback = function () {};
+const obsOptions = {
+  root: null,
+  threshold:
+};
+
+const observer = new IntersectionObserver(obsCallback, obsOptions);
+observer.observe(section1); // Target
+
+////////////////////////////////////////
+// SCROLLING window.scrollY
+////////////////////////////////////////
+/*
 const initialCoords = section1.getBoundingClientRect();
 console.log(initialCoords);
 
@@ -106,6 +119,7 @@ window.addEventListener('scroll', function () {
   if (window.scrollY > initialCoords.top) nav.classList.add('sticky');
   else nav.classList.remove('sticky');
 });
+*/
 
 ////////////////////////////////////////
 ////////////////////////////////////////
