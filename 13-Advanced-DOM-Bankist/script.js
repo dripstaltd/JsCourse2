@@ -485,3 +485,11 @@ window.addEventListener('load', function (e) {
 //   console.log(e);
 //   e.returnValue = 'message';
 // });
+
+//-| <script async src="script.js">
+//: <script defer src="script.js">
+
+//-| WHEN TO USE: async src=""    ;
+// analytics, or scripts that my code wont need to interact with.
+//-| WHEN TO USE: defer src=""    ;
+// Correct order of execution
