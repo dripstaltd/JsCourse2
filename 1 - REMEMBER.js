@@ -113,6 +113,25 @@
         A child class can overwrite a method it inherited from a
         parent class [ it's more complex than this ].
 */
+//////////////////////////////////////////////////////////////////
+//-|     KEYWORDS:                                               ;
+//////////////////////////////////////////////////////////////////
+//>       Classes:                                               ;
+/*
+      Like a blueprint from which we can create new new objects.
+*/
+//>     Instances:                                               ;
+/*
+      Objects (instances) are instantiated from a class, which
+      functions like a blueprint.
+*/
+//>     Prototype:                                               ;
+/*
+      Objects are linked to a prototype object; The prototype
+      contains methods/behavior that are accessible to all objects
+      linked to that prototype; Behavior's delegated to the linked
+      prototype object. 
+*/
 
 // UD5YY2R-UWLL8U9-523U8U3-FWQKKVA
 
