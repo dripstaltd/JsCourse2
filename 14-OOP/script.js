@@ -50,6 +50,44 @@ console.log(ben.species, lewis.species);
 */
 console.log(ben.hasOwnProperty('firstName'));
 /* 
-    Species is not a property of 'ben' because it is not really inside the ben object. However it has access to it because it's in the prototype property    of person.
+      Species is not a property of 'ben' because it is not really inside the ben object. However it has access to it because it's in the prototype property    of person.
 */
 console.log(ben.hasOwnProperty('species'));
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+/* 
+      Person.prototype is NOT the prototype of Person, but all the
+      objects created through the Person function.
+*/
+//////////////////////////////////////////////////////////////////
+//-| The NEW Operator.                                           ;
+//////////////////////////////////////////////////////////////////
+/*
+  1.  And empty {object} is created
+  2.  this.keyword in constructor function call is set to the new object.
+  3.  The new object is linked (__proto__property) to the constructor
+      function's prototype property.
+  4.  The new object is returned from the constructor function call.
+*/
+console.log(ben.__proto__); // Person.prototype
+console.log(ben.__proto__.__proto__); // Object.prototype
+console.log(ben.__proto__.__proto__.__proto__); // End of chain
+
+console.dir(Person.prototype.constructor);
+
+const arr = [3, 6, 5, 6, 6, 8, 2, 5];
+console.log(arr.__proto__); // Array Property
+console.log(arr.__proto__ === Array.prototype);
+// Array.prototype inherits object properties
+console.log(arr.__proto__.__proto__);
+console.log(arr.__proto__.__proto__.__proto__);
+
+Array.prototype.unique = function () {
+  return [...new Set(this)];
+};
+
+console.log(arr.unique());
+
+const h1 = document.querySelector('h1');
+console.dir(x => x + 1);
