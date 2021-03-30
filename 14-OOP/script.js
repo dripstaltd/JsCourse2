@@ -11,11 +11,16 @@
 // 2. function's called |this keyword set to the newly created {}
 // 3. {} linked to prototype
 // 4. function automatically return {}
+
+
+// #1. Classes are not hoisted
+// #2. Classes are first-class citizens
+// #3. Classes are executed in 'strict mode';
 */
 //////////////////////////////////////////////////////////////////
 //>                                                              ;
 //////////////////////////////////////////////////////////////////
-
+/*
 const Person = function (firstName, birthYear) {
   // Instance properties
   this.firstName = firstName;
@@ -44,15 +49,16 @@ console.log(Person.prototype.isPrototypeOf(Person));
 
 Person.prototype.species = 'Homo Sapiens';
 console.log(ben.species, lewis.species);
-
+*/
 /*
     This shows that 'firstName' is a property of 'ben'
 */
-console.log(ben.hasOwnProperty('firstName'));
+
+// console.log(ben.hasOwnProperty('firstName'));
 /* 
       Species is not a property of 'ben' because it is not really inside the ben object. However it has access to it because it's in the prototype property    of person.
 */
-console.log(ben.hasOwnProperty('species'));
+// console.log(ben.hasOwnProperty('species'));
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
@@ -70,6 +76,7 @@ console.log(ben.hasOwnProperty('species'));
       function's prototype property.
   4.  The new object is returned from the constructor function call.
 */
+/*
 console.log(ben.__proto__); // Person.prototype
 console.log(ben.__proto__.__proto__); // Object.prototype
 console.log(ben.__proto__.__proto__.__proto__); // End of chain
@@ -91,3 +98,39 @@ console.log(arr.unique());
 
 const h1 = document.querySelector('h1');
 console.dir(x => x + 1);
+*/
+
+//> Class expression
+/*
+const PersonCl = class {};
+*/
+//> Class declaration
+/*
+class PersonCl {
+  constructor(firstName, birthYear) {
+    this.firstName = firstName;
+    this.birthYear = birthYear;
+  }
+  // Methods will be added .prototype property
+  calcAge() {
+    console.log(2021 - this.birthYear);
+  }
+  greet = function () {
+    console.log(`Hey ${this.firstName}`);
+  };
+}
+
+const jessica = new PersonCl('Jessica', 1996);
+console.log(jessica);
+jessica.calcAge();
+
+// PersonCl.prototype.greet = function () {
+//   console.log(`Hey ${this.firstName}`);
+// };
+
+jessica.greet();
+*/
+
+//////////////////////////////////////////////////////////////////
+//-| SETTERS & GETTERS - PROPERTIES                              ;
+//////////////////////////////////////////////////////////////////
