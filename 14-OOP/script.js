@@ -207,3 +207,82 @@ steven.calcAge();
 const sarah = Object.create(PersonProto);
 sarah.init('Sarah', 1979);
 sarah.calcAge();
+
+//////////////////////////////////////////////////////////////////
+//-| Inheritance Between "Classes": Constructor Functions        ;
+//////////////////////////////////////////////////////////////////
+
+const Person = function (firstName, birthYear) {
+  this.firstName = firstName;
+  this.birthYear = birthYear;
+};
+
+Person.prototype.calcAge = function () {
+  console.log(2037 - this.birthYear);
+};
+
+const Student = function (firstName, birthYear, course) {
+  Person.call(this, firstName, birthYear);
+  // this.firstName = firstName;
+  // this.birthYear = birthYear;
+  this.course = course;
+};
+
+Student.prototype = Object.create(Person.prototype);
+
+Student.prototype.introduce = function () {
+  console.log(`My name is ${this.firstName}, and i study ${this.course}`);
+};
+
+const mike = new Student('Mike', 2020, 'Computer Science');
+mike.introduce();
+mike.calcAge(); // This works because of line 231: Prototype Chain
+
+// console.log(mike.__proto__);
+
+Student.prototype.constructor = Student;
+
+console.dir(Student.prototype.constructor);
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//-| Nicotine;
+/*
+const NicotineProduct = function (
+  nBrand,
+  nCat,
+  nType,
+  nStrength,
+  nSize,
+  nLimit,
+  nTotal
+) {
+  this.nBrand = nBrand;
+  this.nCat = nCat;
+  this.nType = nType;
+  this.nStrength = nStrength;
+  this.nSize = nSize;
+  this.nLimit = nLimit;
+
+  if (nCat === 'Oral' || nCat === 'Skin')
+    this.nTotal = nTotal = nStrength * nSize;
+};
+
+const nicotinell = new NicotineProduct(
+  'Nicotinell',
+  'Oral',
+  'Lozenge',
+  1,
+  204,
+  12
+);
+const niQuitin = new NicotineProduct('NiQuitin', 'Skin', 'Patch', 14, 7, 1);
+const nicoretteGum = new NicotineProduct('Nicorette', 'Oral', 'Gum', 2, 105, 6);
+
+console.log(nicotinell, niQuitin, nicoretteGum);
+*/
