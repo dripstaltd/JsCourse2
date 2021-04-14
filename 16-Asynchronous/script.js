@@ -102,6 +102,7 @@ setTimeout(() => {
 }, 1000);
 */
 ////////////////////////////////////////////////////
+/*
 const renderCountry = function (data, className = '') {
   const html = `
   <article class="country ${className}">
@@ -119,6 +120,7 @@ const renderCountry = function (data, className = '') {
   countriesContainer.insertAdjacentHTML('beforeend', html);
   countriesContainer.style.opacity = 1;
 };
+*/
 ////////////////////////////////////////////////////
 /*
 const getCountryData = function (country) {
@@ -135,20 +137,21 @@ const getCountryData = function (country) {
 getCountryData('portugal');
 */
 ////////////////////////////////////////////////////
-
+/*
 const getJSON = function (url, errorMsg = 'Something went wrong') {
   return fetch(url).then(response => {
     if (!response.ok) throw new Error(`${errorMsg} (${response.status})`);
     return response.json();
   });
 };
-
+*/
 ////////////////////////////////////////////////////
+/*
 const renderError = function (msg) {
   countriesContainer.insertAdjacentText('beforeend', msg);
   // countriesContainer.style.opacity = 1;
 };
-
+*/
 // const getCountryData = function (country) {
 //   // Country 1
 //   fetch(`https://restcountries.eu/rest/v2/name/${country}`)
@@ -183,7 +186,7 @@ const renderError = function (msg) {
 //       countriesContainer.style.opacity = 1;
 //     });
 // };
-
+/*
 const getCountryData = function (country) {
   // Country 1
   getJSON(
@@ -216,4 +219,9 @@ btn.addEventListener('click', function () {
   getCountryData('australia');
 });
 
-// Greta is hot
+*/
+
+console.log('Test start');
+setTimeout(() => console.log('0 sec timer'), 0);
+Promise.resolve('Resolved promise 1').then(res => console.log(res));
+console.log('Test end');
