@@ -10,8 +10,8 @@
 ///////////////////////////////////////////////////////////////
 const form = document.querySelector('.rhyme-form');
 const inputElement = form.querySelector('#input-pwd');
-const resultBlock = document.querySelector('.result-container');
-const btn = document.getElementById('RhymeformBtn');
+const resultBlock = document.querySelector('.result-row');
+const btn = document.getElementById('rhyme-form-btn');
 
 let word = 'plastic';
 let letter;
@@ -69,44 +69,56 @@ const triggered = `${rel}trg=${word}`;
 // };
 
 ///////////////////////////////////////////////////////////////
-const soundsLikeSearch = async function (rhymeKey) {
-  const urlStr = `${rel}rhy=${rhymeKey}`;
-  // Reverse geoCoding
-  const responseDataMuse = await fetch(
-    `https://api.datamuse.com/words?${urlStr}`
-  );
-  const data = await responseDataMuse.json();
-  console.log(data);
-  data.forEach(rhyme => {
-    resultStr.push(rhyme.word);
-  });
-  console.log(resultStr.slice(-10));
+// const soundsLikeSearch = async function (rhymeKey) {
+//   const urlStr = `${rel}rhy=${rhymeKey}`;
+//   // Reverse geoCoding
+//   const responseDataMuse = await fetch(
+//     `https://api.datamuse.com/words?${urlStr}`
+//   );
+//   const data = await responseDataMuse.json();
+//   console.log(data);
+//   data.forEach(rhyme => {
+//     resultStr.push(rhyme.word);
+//   });
+//   console.log(resultStr.slice(-10));
 
-  const displayRhymes = function () {
-    // use this to read data
-    resultBlock.innerHTML = ' ';
+//   // renderRhymeList(data[0]);
+// };
 
-    resultBlock.textContent = resultStr.slice(-10);
+// // Render to html
+// const displayRhymes = function () {
+//   // use this to read data
+//   resultBlock.innerHTML = ' ';
 
-    resultStr.forEach(function (wrd, i) {
-      const html = `
-        <div class="movements__row">
-          <div class="movements__type movements__type--${wrd}">${
-        i + 1
-      } ${wrd}</div>
-      </div>
-      `;
-      resultBlock.insertAdjacentHTML('afterbegin', html);
+//   resultBlock.textContent = resultStr.slice(-10);
+
+//   resultStr.forEach(function (wrd, i) {
+//     const html = `
+//     <p class="result-row">${wrd}</p>
+//     `;
+//     resultBlock.insertAdjacentHTML('afterbegin', html);
+//   });
+// };
+
+// btn.addEventListener('click', function (e) {
+//   e.preventDefault();
+//   a = inputElement.value;
+//   inputElement.focus();
+//   soundsLikeSearch(a);
+// });
+
+const getWordData = function (word) {
+  fetch(`https://api.datamuse.com/words?rel_rhy=${word}`)
+    .then(function (response) {
+      return response.json();
+    })
+    .then(function (rhymeData) {
+      console.log(rhymeData);
     });
-  };
-  displayRhymes();
-  // Render data
-  // renderRhymeList(data[0]);
 };
 
 btn.addEventListener('click', function (e) {
   e.preventDefault();
-  a = inputElement.value;
   inputElement.focus();
-  soundsLikeSearch(a);
+  getWordData('joke');
 });
