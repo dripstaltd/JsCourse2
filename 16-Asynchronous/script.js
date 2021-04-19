@@ -22,6 +22,12 @@ const renderCountry = function (data, className = '') {
   countriesContainer.style.opacity = 1;
 };
 ///////////////////////////////////////
+//-| RENDER ERRORS
+const renderError = function (msg) {
+  countriesContainer.insertAdjacentText('beforeend', msg);
+  // countriesContainer.style.opacity = 1;
+};
+///////////////////////////////////////
 const getPosition = function () {
   return new Promise(function (resolve, reject) {
     navigator.geolocation.getCurrentPosition(resolve, reject);
@@ -29,32 +35,52 @@ const getPosition = function () {
 };
 // getPosition().then(pos => console.log(pos));
 ///////////////////////////////////////
-
+/*
 const whereAmI = async function () {
-  // GeoLocation
-  const pos = await getPosition();
-  const { latitude: lat, longitude: lng } = pos.coords;
+  try {
+    // GeoLocation
+    const pos = await getPosition();
+    const { latitude: lat, longitude: lng } = pos.coords;
 
-  // Reverse geoCoding
-  const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
-  const dataGeo = await resGeo.json();
+    // Reverse geoCoding
+    const resGeo = await fetch(`https://geocode.xyz/${lat},${lng}?geoit=json`);
+    if (!resGeo.ok) throw new Error('Problem getting location data');
+    const dataGeo = await resGeo.json();
 
-  // Country data
-  const res = await fetch(
-    `https://restcountries.eu/rest/v2/name/${dataGeo.country}`
-  );
-  const data = await res.json();
-  console.log(data);
-  renderCountry(data[0]);
+    // Country data
+    const res = await fetch(
+      `https://restcountries.eu/rest/v2/name/${dataGeo.country}`
+    );
+    if (!res.ok) throw new Error('Problem getting location data');
+    const data = await res.json();
+    renderCountry(data[0]);
+
+    return `You are in ${dataGeo.city}, ${dataGeo.country}`;
+  } catch (err) {
+    console.error(`${err} 💣`);
+    renderError(` 💣${err.message}`);
+
+    // Reject promise returned from async function
+    throw err;
+  }
 };
 
-whereAmI();
-console.log('FIRST');
+console.log('1: Will get location');
+// const city = whereAmI();
+// console.log(city);
 
-try {
-  let y = 1;
-  const x = 2;
-  x = 3;
-} catch (err) {
-  alert(err.message);
-}
+// whereAmI()
+//   .then(city => console.log(city))
+//   .catch(err => console.error(`2: ${err.message} 😉`))
+//   .finally(() => console.log('3: Finished getting location'));
+
+(async function () {
+  try {
+    const city = await whereAmI();
+    console.log(`2: ${city}`);
+  } catch (err) {
+    console.error(`2: ${err.message} 😉`);
+  }
+  console.log('3: Finished getting location');
+})();
+*/
