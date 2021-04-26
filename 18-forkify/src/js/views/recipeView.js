@@ -1,6 +1,3 @@
-// import icons from '../img/icons.svg'; // Parcel 1
-// import icons from 'url:../img/icons.svg'; // Parcel 2
-
 class RecipeView {
   #parentElement = document.querySelector('.recipe');
   #data;
@@ -27,6 +24,10 @@ class RecipeView {
     this.parentElement.innerHTML = '';
     this.parentElement.insertAdjacentHTML('afterbegin', markup);
   };
+
+  addHandlerRender(handler) {
+    ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
+  }
 
   #generateMarkup() {
     return `
