@@ -465,6 +465,8 @@ var _searchView = _interopRequireDefault(require("./views/searchView.js"));
 
 var _resultsView = _interopRequireDefault(require("./views/resultsView.js"));
 
+var _paginationView = _interopRequireDefault(require("./views/paginationView.js"));
+
 var _config = require("./config.js");
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
@@ -491,9 +493,12 @@ const controlRecipes = async function () {
     // 2) Loading recipe
 
 
-    await model.loadRecipe(id); // 3) Rendering recipe
+    await model.loadRecipe(id); // 3) Rendering results
 
-    _recipeView.default.render(model.state.recipe);
+    _recipeView.default.render(model.state.recipe); // TEST
+
+
+    controlServings(4);
   } catch (err) {
     _recipeView.default.renderError();
 
@@ -512,21 +517,44 @@ const controlSearchResults = async function () {
     if (!query) return; // 2) Load search results
 
     await model.loadSearchResults(query); // 3) Render results
+    // resultsView.render(model.state.search.results);
 
-    _resultsView.default.render(model.state.search.results);
+    _resultsView.default.render(model.getSearchResultsPage()); // 4) Render initial pagination buttons
+
+
+    _paginationView.default.render(model.state.search);
   } catch (err) {
     console.log(err);
   }
 };
 
+const controlPagination = function (goToPage) {
+  // 1) Render NEW results
+  _resultsView.default.render(model.getSearchResultsPage(goToPage)); // 4) Render NEW pagination buttons
+
+
+  _paginationView.default.render(model.state.search);
+};
+
+const controlServings = function (newServings) {
+  // Update the recipe servings (in state)
+  model.updateServings(newServings); // Update the recipe view
+
+  _recipeView.default.render(model.state.recipe);
+};
+
 const init = function () {
   _recipeView.default.addHandlerRender(controlRecipes);
 
+  _recipeView.default.addHandlerUpdateServings(controlServings);
+
   _searchView.default.addHandlerSearch(controlSearchResults);
+
+  _paginationView.default.addHandlerClick(controlPagination);
 };
 
 init();
-},{"core-js/modules/web.immediate.js":"BQdWp","./model.js":"5cc2Y","./views/recipeView.js":"5K27E","./views/searchView.js":"61k0n","./views/resultsView.js":"794dY","./config.js":"he5L7"}],"BQdWp":[function(require,module,exports) {
+},{"core-js/modules/web.immediate.js":"BQdWp","./model.js":"5cc2Y","./views/recipeView.js":"5K27E","./views/searchView.js":"61k0n","./views/resultsView.js":"794dY","./views/paginationView.js":"6ojf6","./config.js":"he5L7"}],"BQdWp":[function(require,module,exports) {
 var $ = require('../internals/export');
 
 var global = require('../internals/global');
@@ -1410,9 +1438,7 @@ module.exports = classof(global.process) == 'process';
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
-
-var _fs = require("@nodelib/fs.stat");
+exports.updateServings = exports.getSearchResultsPage = exports.loadSearchResults = exports.loadRecipe = exports.state = void 0;
 
 var _config = require("./config.js");
 
@@ -1423,6 +1449,7 @@ const state = {
   search: {
     query: '',
     results: [],
+    resultsPerPage: _config.RES_PER_PAGE,
     page: 1
   }
 };
@@ -1443,8 +1470,7 @@ const loadRecipe = async function (id) {
       servings: recipe.servings,
       cookingTime: recipe.cooking_time,
       ingredients: recipe.ingredients
-    };
-    console.log(state.recipe);
+    }; // console.log(state.recipe);
   } catch (err) {
     // Temp error handling
     console.error(`${err} 🔥🔥🔥🔥`);
@@ -1457,8 +1483,8 @@ exports.loadRecipe = loadRecipe;
 const loadSearchResults = async function (query) {
   try {
     state.search.query = query;
-    const data = await (0, _helpers.getJSON)(`${_config.API_URL}?search=${query}`);
-    console.log(data);
+    const data = await (0, _helpers.getJSON)(`${_config.API_URL}?search=${query}`); // console.log(data);
+
     state.search.results = data.data.recipes.map(rec => {
       return {
         id: rec.id,
@@ -1474,132 +1500,27 @@ const loadSearchResults = async function (query) {
 };
 
 exports.loadSearchResults = loadSearchResults;
-},{"@nodelib/fs.stat":"1mfgw","./config.js":"he5L7","./helpers.js":"rsHc2"}],"1mfgw":[function(require,module,exports) {
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.statSync = exports.stat = exports.Settings = void 0;
-const async = require("./providers/async");
-const sync = require("./providers/sync");
-const settings_1 = require("./settings");
-exports.Settings = settings_1.default;
-function stat(path, optionsOrSettingsOrCallback, callback) {
-    if (typeof optionsOrSettingsOrCallback === 'function') {
-        return async.read(path, getSettings(), optionsOrSettingsOrCallback);
-    }
-    async.read(path, getSettings(optionsOrSettingsOrCallback), callback);
-}
-exports.stat = stat;
-function statSync(path, optionsOrSettings) {
-    const settings = getSettings(optionsOrSettings);
-    return sync.read(path, settings);
-}
-exports.statSync = statSync;
-function getSettings(settingsOrOptions = {}) {
-    if (settingsOrOptions instanceof settings_1.default) {
-        return settingsOrOptions;
-    }
-    return new settings_1.default(settingsOrOptions);
-}
 
-},{"./providers/async":"5ovQM","./providers/sync":"4lk7n","./settings":"4NLh8"}],"5ovQM":[function(require,module,exports) {
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.read = void 0;
-function read(path, settings, callback) {
-    settings.fs.lstat(path, (lstatError, lstat) => {
-        if (lstatError !== null) {
-            return callFailureCallback(callback, lstatError);
-        }
-        if (!lstat.isSymbolicLink() || !settings.followSymbolicLink) {
-            return callSuccessCallback(callback, lstat);
-        }
-        settings.fs.stat(path, (statError, stat) => {
-            if (statError !== null) {
-                if (settings.throwErrorOnBrokenSymbolicLink) {
-                    return callFailureCallback(callback, statError);
-                }
-                return callSuccessCallback(callback, lstat);
-            }
-            if (settings.markSymbolicLink) {
-                stat.isSymbolicLink = () => true;
-            }
-            callSuccessCallback(callback, stat);
-        });
-    });
-}
-exports.read = read;
-function callFailureCallback(callback, error) {
-    callback(error);
-}
-function callSuccessCallback(callback, result) {
-    callback(null, result);
-}
+const getSearchResultsPage = function (page = state.search.page) {
+  state.search.page = page;
+  const start = (page - 1) * state.search.resultsPerPage; // 0;
 
-},{}],"4lk7n":[function(require,module,exports) {
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.read = void 0;
-function read(path, settings) {
-    const lstat = settings.fs.lstatSync(path);
-    if (!lstat.isSymbolicLink() || !settings.followSymbolicLink) {
-        return lstat;
-    }
-    try {
-        const stat = settings.fs.statSync(path);
-        if (settings.markSymbolicLink) {
-            stat.isSymbolicLink = () => true;
-        }
-        return stat;
-    }
-    catch (error) {
-        if (!settings.throwErrorOnBrokenSymbolicLink) {
-            return lstat;
-        }
-        throw error;
-    }
-}
-exports.read = read;
+  const end = page * state.search.resultsPerPage; // 9;
 
-},{}],"4NLh8":[function(require,module,exports) {
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-const fs = require("./adapters/fs");
-class Settings {
-    constructor(_options = {}) {
-        this._options = _options;
-        this.followSymbolicLink = this._getValue(this._options.followSymbolicLink, true);
-        this.fs = fs.createFileSystemAdapter(this._options.fs);
-        this.markSymbolicLink = this._getValue(this._options.markSymbolicLink, false);
-        this.throwErrorOnBrokenSymbolicLink = this._getValue(this._options.throwErrorOnBrokenSymbolicLink, true);
-    }
-    _getValue(option, value) {
-        return option !== null && option !== void 0 ? option : value;
-    }
-}
-exports.default = Settings;
-
-},{"./adapters/fs":"2ELjr"}],"2ELjr":[function(require,module,exports) {
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.createFileSystemAdapter = exports.FILE_SYSTEM_ADAPTER = void 0;
-const fs = require("fs");
-exports.FILE_SYSTEM_ADAPTER = {
-    lstat: fs.lstat,
-    stat: fs.stat,
-    lstatSync: fs.lstatSync,
-    statSync: fs.statSync
+  return state.search.results.slice(start, end);
 };
-function createFileSystemAdapter(fsMethods) {
-    if (fsMethods === undefined) {
-        return exports.FILE_SYSTEM_ADAPTER;
-    }
-    return Object.assign(Object.assign({}, exports.FILE_SYSTEM_ADAPTER), fsMethods);
-}
-exports.createFileSystemAdapter = createFileSystemAdapter;
 
-},{"fs":"6lYam"}],"6lYam":[function(require,module,exports) {
-"use strict";
-},{}],"he5L7":[function(require,module,exports) {
+exports.getSearchResultsPage = getSearchResultsPage;
+
+const updateServings = function (newServings) {
+  state.recipe.ingredients.forEach(ing => {
+    ing.quantity = ing.quantity * newServings / state.recipe.servings; // newQty = oldQty * newServings / oldServings // 2 * 8 / 4 = 4
+  });
+  state.recipe.servings = newServings;
+};
+
+exports.updateServings = updateServings;
+},{"./config.js":"he5L7","./helpers.js":"rsHc2"}],"he5L7":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -1683,6 +1604,17 @@ class RecipeView extends _View.default {
 
   addHandlerRender(handler) {
     ['hashchange', 'load'].forEach(ev => window.addEventListener(ev, handler));
+  }
+
+  addHandlerUpdateServings(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--update-servings');
+      if (!btn) return;
+      const {
+        updateTo
+      } = btn.dataset;
+      if (+updateTo > 0) handler(+updateTo);
+    });
   }
 
   _generateMarkup() {
@@ -1782,7 +1714,92 @@ class RecipeView extends _View.default {
 var _default = new RecipeView();
 
 exports.default = _default;
-},{"url:../../img/icons.svg":"7wuzf","fractional":"6Kpg2","./View":"2YoaS"}],"7wuzf":[function(require,module,exports) {
+},{"./View":"2YoaS","url:../../img/icons.svg":"7wuzf","fractional":"6Kpg2"}],"2YoaS":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _icons = _interopRequireDefault(require("url:../../img/icons.svg"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+class View {
+  constructor() {
+    _defineProperty(this, "_data", void 0);
+
+    _defineProperty(this, "renderSpinner", function () {
+      const markup = `
+    <div class="spinner">
+      <svg>
+        <use href="${_icons.default}#icon-loader"></use>
+      </svg>
+    </div>
+    `;
+
+      this._clear();
+
+      this._parentElement.insertAdjacentHTML('afterbegin', markup);
+    });
+  }
+
+  render(data) {
+    if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
+    this._data = data;
+
+    const markup = this._generateMarkup();
+
+    this._clear();
+
+    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+
+  _clear() {
+    this._parentElement.innerHTML = '';
+  }
+
+  renderError(message = this._errorMessage) {
+    const markup = `
+      <div class="error">
+        <div>
+          <svg>
+            <use href="${_icons.default}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <p>${message}</p>
+      </div>
+    `;
+
+    this._clear();
+
+    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+
+  renderMessage(message = this._message) {
+    const markup = `
+      <div class="message">
+        <div>
+          <svg>
+            <use href="${_icons.default}#icon-smile"></use>
+          </svg>
+        </div>
+        <p>${message}</p>
+      </div>
+    `;
+
+    this._clear();
+
+    this._parentElement.insertAdjacentHTML('afterbegin', markup);
+  }
+
+}
+
+exports.default = View;
+},{"url:../../img/icons.svg":"7wuzf"}],"7wuzf":[function(require,module,exports) {
 module.exports = require('./bundle-url').getBundleURL() + require('./relative-path')("4bEJ3", "674lE");
 },{"./bundle-url":"10N7P","./relative-path":"Q4PMS"}],"10N7P":[function(require,module,exports) {
 "use strict";
@@ -2264,92 +2281,7 @@ Fraction.primeFactors = function(n)
 
 module.exports.Fraction = Fraction
 
-},{}],"2YoaS":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-
-var _icons = _interopRequireDefault(require("url:../../img/icons.svg"));
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
-class View {
-  constructor() {
-    _defineProperty(this, "_data", void 0);
-
-    _defineProperty(this, "renderSpinner", function () {
-      const markup = `
-    <div class="spinner">
-      <svg>
-        <use href="${_icons.default}#icon-loader"></use>
-      </svg>
-    </div>
-    `;
-
-      this._clear();
-
-      this._parentElement.insertAdjacentHTML('afterbegin', markup);
-    });
-  }
-
-  render(data) {
-    if (!data || Array.isArray(data) && data.length === 0) return this.renderError();
-    this._data = data;
-
-    const markup = this._generateMarkup();
-
-    this._clear();
-
-    this._parentElement.insertAdjacentHTML('afterbegin', markup);
-  }
-
-  _clear() {
-    this._parentElement.innerHTML = '';
-  }
-
-  renderError(message = this._errorMessage) {
-    const markup = `
-      <div class="error">
-        <div>
-          <svg>
-            <use href="${_icons.default}#icon-alert-triangle"></use>
-          </svg>
-        </div>
-        <p>${message}</p>
-      </div>
-    `;
-
-    this._clear();
-
-    this._parentElement.insertAdjacentHTML('afterbegin', markup);
-  }
-
-  renderMessage(message = this._message) {
-    const markup = `
-      <div class="message">
-        <div>
-          <svg>
-            <use href="${_icons.default}#icon-smile"></use>
-          </svg>
-        </div>
-        <p>${message}</p>
-      </div>
-    `;
-
-    this._clear();
-
-    this._parentElement.insertAdjacentHTML('afterbegin', markup);
-  }
-
-}
-
-exports.default = View;
-},{"url:../../img/icons.svg":"7wuzf"}],"61k0n":[function(require,module,exports) {
+},{}],"61k0n":[function(require,module,exports) {
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -2417,7 +2349,6 @@ class ResultsView extends _View.default {
   }
 
   _generateMarkup() {
-    console.log(this._data);
     return this._data.map(this._generateMarkupPreview).join('');
   }
 
@@ -2441,6 +2372,93 @@ class ResultsView extends _View.default {
 
 
 var _default = new ResultsView();
+
+exports.default = _default;
+},{"./View.js":"2YoaS","url:../../img/icons.svg":"7wuzf"}],"6ojf6":[function(require,module,exports) {
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = void 0;
+
+var _View = _interopRequireDefault(require("./View.js"));
+
+var _icons = _interopRequireDefault(require("url:../../img/icons.svg"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+/////////////////////////////////////////////////////
+class PaginationView extends _View.default {
+  constructor(...args) {
+    super(...args);
+
+    _defineProperty(this, "_parentElement", document.querySelector('.pagination'));
+  }
+
+  addHandlerClick(handler) {
+    this._parentElement.addEventListener('click', function (e) {
+      const btn = e.target.closest('.btn--inline');
+      if (!btn) return;
+      const goToPage = +btn.dataset.goto;
+      handler(goToPage);
+    });
+  }
+
+  _generateMarkup() {
+    const curPage = this._data.page;
+    const numPages = Math.ceil(this._data.results.length / this._data.resultsPerPage); // Page 1, and there are other pages
+
+    if (curPage === 1 && numPages > 1) {
+      return `
+      <button data-goto="${curPage + 1}" class="btn--inline pagination__btn--next">
+        <span>Page ${curPage + 1}</span>
+        <svg class="search__icon">
+          <use href="${_icons.default}#icon-arrow-right"></use>
+        </svg>
+      </button>
+      `;
+    } // Last page
+
+
+    if (curPage === numPages && numPages > 1) {
+      return `
+        <button data-goto="${curPage - 1}" class="btn--inline pagination__btn--prev">
+          <svg class="search__icon">
+            <use href="${_icons.default}#icon-arrow-left"></use>
+          </svg>
+          <span>Page ${curPage - 1}</span>
+        </button>
+      `;
+    } // Other page
+
+
+    if (curPage < numPages) {
+      return `
+        <button data-goto="${curPage - 1}" class="btn--inline pagination__btn--prev">
+          <svg class="search__icon">
+            <use href="${_icons.default}#icon-arrow-left"></use>
+          </svg>
+          <span>Page ${curPage - 1}</span>
+        </button>
+        <button data-goto="${curPage + 1}" class="btn--inline pagination__btn--next">
+          <span>Page ${curPage + 1}</span>
+          <svg class="search__icon">
+            <use href="${_icons.default}#icon-arrow-right"></use>
+          </svg>
+        </button>
+      `;
+    } // Page 1, and there are no other pages
+
+
+    return '';
+  }
+
+}
+
+var _default = new PaginationView();
 
 exports.default = _default;
 },{"./View.js":"2YoaS","url:../../img/icons.svg":"7wuzf"}]},{},["6GPhY","4iKEs","I5Uh7"], "I5Uh7", "parcelRequirefade")
