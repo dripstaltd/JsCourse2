@@ -1,10 +1,21 @@
 import * as model from './model.js';
+// import { MODAL_CLOSE_SEC } from './config.js';
 import recipeView from './views/recipeView.js';
 import searchView from './views/searchView.js';
+import resultsView from './views/resultsView.js';
+// import paginationView from './views/paginationView.js';
+// import bookmarksView from './views/bookmarksView.js';
+// import addRecipeView from './views/addRecipeView.js';
+
 ///////////////////////////////////////
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
+import { TIMEOUT_SEC } from './config.js';
 ///////////////////////////////////////
+if (module.hot) {
+  module.hot.accept();
+}
+
 const controlRecipes = async function () {
   try {
     const id = window.location.hash.slice(1);
@@ -12,18 +23,28 @@ const controlRecipes = async function () {
     if (!id) return;
     recipeView.renderSpinner();
 
-    // 1) Loading recipe
+    // 0) Update results view to mark selected search result
+    // resultsView.update(model.getSearchResultsPage());
+
+    // 1) Updating bookmarks view
+    // bookmarksView.update(model.state.bookmarks);
+
+    // 2) Loading recipe
     await model.loadRecipe(id);
 
-    // 2) Rendering Recipe
+    // 3) Rendering recipe
     recipeView.render(model.state.recipe);
   } catch (err) {
     recipeView.renderError();
+    console.error(err);
   }
 };
 
 const controlSearchResults = async function () {
   try {
+    // 0) Display spinner
+    resultsView.renderSpinner();
+
     // 1) Get search query
     const query = searchView.getQuery();
     if (!query) return;
@@ -32,9 +53,9 @@ const controlSearchResults = async function () {
     await model.loadSearchResults(query);
 
     // 3) Render results
-    console.log(model.state.search.results);
+    resultsView.render(model.state.search.results);
   } catch (err) {
-    console.log(error);
+    console.log(err);
   }
 };
 

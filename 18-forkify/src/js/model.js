@@ -1,17 +1,19 @@
 import { stat } from '@nodelib/fs.stat';
 import { API_URL } from './config.js';
 import { getJSON } from './helpers.js';
+
 export const state = {
   recipe: {},
   search: {
     query: '',
     results: [],
+    page: 1,
   },
 };
 
 export const loadRecipe = async function (id) {
   try {
-    const data = await getJSON(`${API_URL}/${id}`);
+    const data = await getJSON(`${API_URL}${id}`);
 
     const { recipe } = data.data;
     state.recipe = {
